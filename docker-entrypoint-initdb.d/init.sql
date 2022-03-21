@@ -1,10 +1,12 @@
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+
 --- ONLY TIMESTAMP TABLES
 CREATE TABLE test_no_ts(
   start_ts TIMESTAMP NOT NULL,
   end_ts TIMESTAMP NOT NULL
 );
 
-CREATE UNIQUE INDEX test_no_ts_unique ON test_no_ts (start_ts, end_ts);
+CREATE UNIQUE INDEX test_no_ts_unique ON test_no_ts (start_ts asc, end_ts desc);
 
 CREATE TABLE test_ts(
   ts tstzrange
@@ -29,7 +31,7 @@ CREATE TABLE test_ser_no_ts(
   end_ts TIMESTAMP NOT NULL
 );
 
-CREATE UNIQUE INDEX test_ser_no_ts_unique ON test_ser_no_ts (start_ts, end_ts);
+CREATE UNIQUE INDEX test_ser_no_ts_unique ON test_ser_no_ts (start_ts asc, end_ts desc);
 
 CREATE TABLE test_ser_ts(
   id SERIAL, 
@@ -49,11 +51,12 @@ select ts from test_ts;
 --- TIMESTAMP + ID + PROPERTY TABLES
 CREATE TABLE test_ser_prop_ts(
   id SERIAL,
-  ts tstzrange,
+  ts tstzrange NOT NULL,
   prop_a BIGINT NOT NULL
 );
 
-CREATE UNIQUE INDEX test_ser_prop_ts_unique ON test_ser_prop_ts (ts, prop_a);
+CREATE INDEX test_ser_prop_ts_ts ON test_ser_prop_ts USING GIST (ts);
+CREATE INDEX test_ser_prop_ts_prop_a ON test_ser_prop_ts (prop_a);
 
 CREATE TABLE test_ser_prop_no_ts(
   id SERIAL,
@@ -62,7 +65,7 @@ CREATE TABLE test_ser_prop_no_ts(
   prop_a BIGINT NOT NULL
 );
 
-CREATE UNIQUE INDEX test_ser_prop_no_ts_unique ON test_ser_prop_no_ts (start_ts, end_ts, prop_a);
+CREATE UNIQUE INDEX test_ser_prop_no_ts_unique ON test_ser_prop_no_ts (start_ts asc, end_ts desc, prop_a);
 
 
 -- FILL

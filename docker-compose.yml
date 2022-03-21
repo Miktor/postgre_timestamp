@@ -16,7 +16,11 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U admin -d test_pg" ]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U admin -d test_pg -h localhost"
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
